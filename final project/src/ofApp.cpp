@@ -1,13 +1,22 @@
 #include "ofApp.h"
 #include <cmath>
+#include <iomanip>
 
 // Setup all the planet's and reset the simulation
 void ofApp::setup() {
+
+	ofSetVerticalSync(false);
+	ofSetFrameRate(30);
+
+
 	for (int i = 0; i < number_of_planets; i++) {
 		planets.push_back(planet());
 	}
 
 	resetSimulation();
+	main_force_holder = 0;
+	force_x_holder = 0;
+	force_y_holder = 0;
 }
 
 //--------------------------------------------------------------
@@ -24,6 +33,7 @@ void ofApp::update() {	// split up into methods
 
 				// Destory planets when collide - will throw error if two many collide at one time
 				// Change to area of circle
+				
 				if (planets[i].radius + planets[j].radius > 
 						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y) + collision_distance_helper) {
 
@@ -37,13 +47,18 @@ void ofApp::update() {	// split up into methods
 						planets.erase(planets.begin() + i);
 					}
 				}
+				
 
 				else {
 
 					// Will never divide by zero becuase we check to destroy a planet before this
 					// Magnitude of all the force on the planet, F = G*M1*M2/(d^2)
-					planets[i].main_force += gravitational_constant * planets[i].mass * planets[j].mass /
-							ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
+					
+					//planets[i].main_force += gravitational_constant * planets[i].mass * planets[j].mass /
+						//	ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
+
+					main_force_holder = gravitational_constant * planets[i].mass * planets[j].mass /
+						ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
 
 					/*
 					if (i == 0) {
@@ -51,46 +66,68 @@ void ofApp::update() {	// split up into methods
 						cout << planets[i].main_force << endl;						///////
 					}
 					*/
+					
+					
 
 					// Sum of all X-component's of the force, if neither < or > then default is 0
 					// Fx = F * ((x2 - x1) / d), Fx = the force proportional to the x distance
 					if (planets[i].position.x > planets[j].position.x) {
-						planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
-							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
+						// += or =???
+						//planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
+							//ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
+						force_x_holder = planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
+							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 					}
 					else if (planets[i].position.x < planets[j].position.x) {
-						planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
-							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
+						//planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
+							//ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
+						force_x_holder = planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
+							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 					}
 
 					// Sum of all Y-component's of the force, if neither < or > then default is 0
 					// Check this
 					if (planets[i].position.y > planets[j].position.y) {
-						planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
-							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
+						//planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
+							//ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
+						force_y_holder = planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
+							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 					}
 					else if (planets[i].position.y < planets[j].position.y) {
-						planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
-							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
+						//planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
+							//ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
+						force_y_holder = planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
+							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 					}
 					
 					// Print components of force
-					/* 
+					 /*
 					if (i == 0) {
 						cout << planets[i].force_components.x << endl;						///////
 						cout << planets[i].force_components.y << endl;						///////
 					}
 					*/
 					
-					// This works - checked on calculator
+
+					planets[i].main_force += main_force_holder;
+					planets[i].force_components.x += force_x_holder;
+					planets[i].force_components.y += force_y_holder;
+
+					
+					
+					// Print combined components 
 					/*
 					if (i == 0) {
 						cout << "combined: ";
-						cout << sqrtf((pow(planets[i].force_components.x, 2) + pow(planets[i].force_components.y, 2))) << endl;
+						cout << setprecision(10) << sqrtf((pow(planets[i].force_components.x, 2) + pow(planets[i].force_components.y, 2))) << endl;
 					}
 					*/
+					
 
 				}
+				main_force_holder = 0;
+				force_x_holder = 0;
+				force_y_holder = 0;
 			}
 		}
 

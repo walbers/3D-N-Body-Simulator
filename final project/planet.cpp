@@ -3,7 +3,7 @@
 planet::planet() {
 	// Change so their are more smaller and less bigger planets
 	// Look up a factor for proportionality
-	radius = ofRandom(3, 20);
+	radius = ofRandom(24, 25);
 	mass = ofRandom(0, 2) * radius * 1.0e7; // mass scales with radius, earth and mars scale ~1.0e6-1.07 from radius to mass
 	
 	/*

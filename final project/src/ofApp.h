@@ -14,6 +14,17 @@
 //							  Fx = proportional way isn't accurate either
 
 
+// double
+
+//singleton class/pattern, extern in header and cpp or static variable in class
+// global variable pattern
+
+
+
+// scale velocity
+
+
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -26,10 +37,16 @@ class ofApp : public ofBaseApp{
 		vector<planet> planets;
 		
 		// Constants - make const
-		float gravitational_constant = 8.0e-10; //6.67408e10-11
+		float gravitational_constant = 8.0e-7; //6.67408e10-11
 		float max_speed = 40;
 		float collision_distance_helper = 5; // Can control when planets collide
-		int number_of_planets = 150; // ik gets laggy at 400
+		int number_of_planets = 10; // ik gets laggy at 400
+
+		// Holders
+		float main_force_holder;
+		float force_x_holder;
+		float force_y_holder;
+
 		
 		//***********//
 		void keyPressed(int key);
