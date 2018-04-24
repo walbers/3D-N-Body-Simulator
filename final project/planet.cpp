@@ -40,7 +40,9 @@ void planet::update() {
 // Draw the planet
 void planet::draw() {
 	ofSetColor(66, 83, 244); // blue
-	ofDrawSphere(position.x, position.y, radius);
+	ofDrawCircle(position.x, position.y, radius);
+	//3d
+	//ofDrawSphere(position.x, position.y, radius);
 	ofSetColor(244, 83, 66); // red
 	ofDrawBitmapString(mass, position.x, position.y);
 

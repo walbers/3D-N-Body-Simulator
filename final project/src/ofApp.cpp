@@ -105,11 +105,15 @@ void ofApp::update() {	// split up into methods
 void ofApp::draw() {
 	ofBackgroundGradient(ofColor(60, 60, 60), ofColor(10, 10, 10));
 
-	cam.begin();
+	//3d
+	//cam.begin();
 
 	for (unsigned int i = 0; i < planets.size(); i++) {
 		planets[i].draw();
 	}
+
+	//3D
+	//ofDrawGridPlane(20, 50, false);
 
 	/*
 	// Draw frame stuff
@@ -119,7 +123,9 @@ void ofApp::draw() {
 	string frame_rate = "Frame rate: " + ofToString(ofGetFrameRate(), 4);
 	ofDrawBitmapString(frame_rate, 100, 110);
 	*/
-	cam.end();
+	
+	//3d
+	//cam.end();
 
 	//string time = "Time: " + ofToString(ofGetFrameNum(), 4) + "s";
 	//ofDrawBitmapString(time, 100, 120);
