@@ -8,128 +8,86 @@ void ofApp::setup() {
 	ofSetVerticalSync(false);
 	ofSetFrameRate(30);
 
-
+	// Create array of planets
 	for (int i = 0; i < number_of_planets; i++) {
 		planets.push_back(planet());
 	}
 
 	resetSimulation();
-	main_force_holder = 0;
-	force_x_holder = 0;
-	force_y_holder = 0;
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {	// split up into methods
 
-	//cout << ofGetFrameRate() << endl;
-	//cout << ofGetFrameNum() << endl;						////////
+	destroy();
 	
 	// Go through each planet getting its force
 	for (unsigned i = 0; i < planets.size(); i++) {
 		for (unsigned j = 0; j < planets.size(); j++) {
 
+			// Will never divide by zero becuase we check to destroy a planet before this
+			// Magnitude of all the force on the planet, F = G*M1*M2/(d^2)
 			if (i != j) {
 
-				// Destory planets when collide - will throw error if two many collide at one time
-				// Change to area of circle
-				
-				if (planets[i].radius + planets[j].radius > 
-						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y) + collision_distance_helper) {
+				main_force_holder = gravitational_constant * planets[i].mass * planets[j].mass /
+					ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
 
-					if (planets[i].radius > planets[j].radius) {
 
-						planets[i].mass += planets[j].mass;
-						planets.erase(planets.begin() + j);
-					}
-					else {
-						planets[j].mass += planets[i].mass;
-						planets.erase(planets.begin() + i);
-					}
+
+				// Sum of all X-component's of the force, if neither < or > then default is 0
+				// Fx = F * ((x2 - x1) / d), Fx = the force proportional to the x distance
+				if (planets[i].position.x > planets[j].position.x) {
+					force_x_holder = ((planets[j].position.x - planets[i].position.x) /
+						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 				}
-				
-
-				else {
-
-					// Will never divide by zero becuase we check to destroy a planet before this
-					// Magnitude of all the force on the planet, F = G*M1*M2/(d^2)
-					
-					//planets[i].main_force += gravitational_constant * planets[i].mass * planets[j].mass /
-						//	ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
-
-					main_force_holder = gravitational_constant * planets[i].mass * planets[j].mass /
-						ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
-
-					/*
-					if (i == 0) {
-						cout << "main: ";
-						cout << planets[i].main_force << endl;						///////
-					}
-					*/
-					
-					
-
-					// Sum of all X-component's of the force, if neither < or > then default is 0
-					// Fx = F * ((x2 - x1) / d), Fx = the force proportional to the x distance
-					if (planets[i].position.x > planets[j].position.x) {
-						// += or =???
-						//planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
-							//ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
-						force_x_holder = planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
-							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
-					}
-					else if (planets[i].position.x < planets[j].position.x) {
-						//planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
-							//ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
-						force_x_holder = planets[i].force_components.x += ((planets[j].position.x - planets[i].position.x) /
-							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
-					}
-
-					// Sum of all Y-component's of the force, if neither < or > then default is 0
-					// Check this
-					if (planets[i].position.y > planets[j].position.y) {
-						//planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
-							//ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
-						force_y_holder = planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
-							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
-					}
-					else if (planets[i].position.y < planets[j].position.y) {
-						//planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
-							//ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * planets[i].main_force;
-						force_y_holder = planets[i].force_components.y += ((planets[j].position.y - planets[i].position.y) /
-							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
-					}
-					
-					// Print components of force
-					 /*
-					if (i == 0) {
-						cout << planets[i].force_components.x << endl;						///////
-						cout << planets[i].force_components.y << endl;						///////
-					}
-					*/
-					
-
-					planets[i].main_force += main_force_holder;
-					planets[i].force_components.x += force_x_holder;
-					planets[i].force_components.y += force_y_holder;
-
-					
-					
-					// Print combined components 
-					/*
-					if (i == 0) {
-						cout << "combined: ";
-						cout << setprecision(10) << sqrtf((pow(planets[i].force_components.x, 2) + pow(planets[i].force_components.y, 2))) << endl;
-					}
-					*/
-					
-
+				else if (planets[i].position.x < planets[j].position.x) {
+					force_x_holder = ((planets[j].position.x - planets[i].position.x) /
+						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 				}
+
+				// Sum of all Y-component's of the force, if neither < or > then default is 0
+				// Check this
+				if (planets[i].position.y > planets[j].position.y) {
+					force_y_holder = ((planets[j].position.y - planets[i].position.y) /
+						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
+				}
+				else if (planets[i].position.y < planets[j].position.y) {
+					force_y_holder = ((planets[j].position.y - planets[i].position.y) /
+						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
+				}
+
+
+				planets[i].main_force += main_force_holder;
+				planets[i].force_components.x += force_x_holder;
+				planets[i].force_components.y += force_y_holder;
+
 				main_force_holder = 0;
 				force_x_holder = 0;
 				force_y_holder = 0;
+
+
+
+				// Print combined components 
+
+				/*
+				if (i == 0) {
+					cout << "main: " << planets[i].main_force << endl;						///////
+					cout << "combined: ";
+					cout << setprecision(10) << sqrtf((pow(planets[i].force_components.x, 2) + pow(planets[i].force_components.y, 2))) << endl;
+				}
+				*/
+
+
+
 			}
 		}
+				/*
+				main_force_holder = 0;
+				force_x_holder = 0;
+				force_y_holder = 0;
+				*/
+			//}
+		
 
 		
 
@@ -201,6 +159,9 @@ void ofApp::resetSimulation() {
 	for (unsigned int i = 0; i < planets.size(); i++) {
 		planets[i].totalReset();
 	}
+	main_force_holder = 0;
+	force_x_holder = 0;
+	force_y_holder = 0;
 }
 
 // Reset all vector's but velocity so they can be updated
@@ -208,6 +169,34 @@ void ofApp::resetVectors() {
 	for (unsigned int i = 0; i < planets.size(); i++) {
 		planets[i].reset();
 	}
+}
+
+void ofApp::destroy() {
+	for (unsigned i = 0; i < planets.size(); i++) {
+		for (unsigned j = 0; j < planets.size(); j++) {
+
+			if (i != j) {
+
+				// Destory planets when collide - will throw error if two many collide at one time
+				// Change to area of circle
+				if (planets[i].radius + planets[j].radius >
+					ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y) + collision_distance_helper) {
+
+					if (planets[i].radius > planets[j].radius) {
+
+						planets[i].mass += planets[j].mass;
+						planets.erase(planets.begin() + j);
+					}
+					else {
+						planets[j].mass += planets[i].mass;
+						planets.erase(planets.begin() + i);
+					}
+				}
+			}
+
+		}
+	}
+
 }
 
 
@@ -268,3 +257,29 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+
+
+
+/*
+if (i != j) {
+
+// Destory planets when collide - will throw error if two many collide at one time
+// Change to area of circle
+
+if (planets[i].radius + planets[j].radius >
+ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y) + collision_distance_helper) {
+
+if (planets[i].radius > planets[j].radius) {
+
+planets[i].mass += planets[j].mass;
+planets.erase(planets.begin() + j);
+}
+else {
+planets[j].mass += planets[i].mass;
+planets.erase(planets.begin() + i);
+}
+}
+
+
+else {
+*/

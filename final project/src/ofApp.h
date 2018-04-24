@@ -8,8 +8,6 @@
 // optional: add spin/angular momentum, make 3D (spheres), add an option to create our solar system, elastic/inelastic collisions (shatter the planet), better planets (pictures instead of circle), tidal forces
 // use: gravitational potential to kinetic energy instead of acceleration
 
-// ?: to control time use set and get framerate or a different way?
-
 // Problems ran into: timing, sin/cos/asin weren't accurate enough, .assignn for constructor didn't get random, splitting force into componenets, collision distance with different size planets
 //							  Fx = proportional way isn't accurate either
 
@@ -33,14 +31,15 @@ class ofApp : public ofBaseApp{
 		void draw();
 		void resetVectors();
 		void resetSimulation();
+		void destroy();
 
 		vector<planet> planets;
 		
 		// Constants - make const
-		float gravitational_constant = 8.0e-7; //6.67408e10-11
+		float gravitational_constant = 8.0e-8; //6.67408e10-11
 		float max_speed = 40;
-		float collision_distance_helper = 5; // Can control when planets collide
-		int number_of_planets = 10; // ik gets laggy at 400
+		float collision_distance_helper = 1; // Can control when planets collide
+		int number_of_planets = 150; // ik gets laggy at 400
 
 		// Holders
 		float main_force_holder;
