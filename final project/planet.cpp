@@ -16,7 +16,6 @@ planet::planet() {
 
 // Reset some of the planet's vectors to be recalculated - not velocity becuase that's accumalated
 void planet::reset() {
-	main_force = 0;
 	force_components.x = 0;
 	force_components.y = 0;
 	acceleration.x = 0;

@@ -55,9 +55,13 @@ void ofApp::update() {	// split up into methods
 					force_y_holder = ((planets[j].position.y - planets[i].position.y) /
 						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 				}
+				
+				if (i == 0) {
+					cout << "Force on planet " << i << " by planet " << j << ": " << main_force_holder << endl;
+					cout << "ForceX on planet " << i << " by planet " << j << ": " << force_x_holder << endl;
+					cout << "ForceY on planet " << i << " by planet " << j << ": " << force_y_holder << endl;
+				}
 
-
-				planets[i].main_force += main_force_holder;
 				planets[i].force_components.x += force_x_holder;
 				planets[i].force_components.y += force_y_holder;
 
@@ -69,13 +73,11 @@ void ofApp::update() {	// split up into methods
 
 				// Print combined components 
 
-				/*
+				
 				if (i == 0) {
-					cout << "main: " << planets[i].main_force << endl;						///////
-					cout << "combined: ";
-					cout << setprecision(10) << sqrtf((pow(planets[i].force_components.x, 2) + pow(planets[i].force_components.y, 2))) << endl;
+					cout << "combined: " << setprecision(10) << sqrtf((pow(planets[i].force_components.x, 2) + pow(planets[i].force_components.y, 2))) << endl;
 				}
-				*/
+				
 
 
 
@@ -171,17 +173,18 @@ void ofApp::resetVectors() {
 	}
 }
 
+// Destory planets when collide - will throw error if two many collide at one time
 void ofApp::destroy() {
 	for (unsigned i = 0; i < planets.size(); i++) {
 		for (unsigned j = 0; j < planets.size(); j++) {
 
+			// Don't check itself
 			if (i != j) {
-
-				// Destory planets when collide - will throw error if two many collide at one time
 				// Change to area of circle
 				if (planets[i].radius + planets[j].radius >
 					ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y) + collision_distance_helper) {
 
+					// Bigger planet absorbs littler planet
 					if (planets[i].radius > planets[j].radius) {
 
 						planets[i].mass += planets[j].mass;

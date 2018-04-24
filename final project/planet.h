@@ -16,7 +16,6 @@ public:
 
 	// Updated
 	//float force_vector;
-	float main_force;
 	ofVec2f force_components;
 	ofVec2f acceleration;
 	ofVec2f position;
