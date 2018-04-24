@@ -4,10 +4,6 @@
 class planet {
 	
 public:
-	/*
-	Fg = (G * m1 * m2) / d^2
-	F = m1 * a
-	*/
 
 	// Done in constructor
 	planet();
@@ -26,6 +22,4 @@ public:
 	void totalReset();
 	void update();
 	void draw();
-	void drawMax();
-	void checkMaxSpeed();
 };

@@ -7,6 +7,7 @@ void ofApp::setup() {
 
 	ofSetVerticalSync(false);
 	ofSetFrameRate(30);
+	ofEnableDepthTest();
 
 	// Create array of planets
 	for (int i = 0; i < number_of_planets; i++) {
@@ -33,7 +34,6 @@ void ofApp::update() {	// split up into methods
 					ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
 
 
-
 				// Sum of all X-component's of the force, if neither < or > then default is 0
 				// Fx = F * ((x2 - x1) / d), Fx = the force proportional to the x distance
 				if (planets[i].position.x > planets[j].position.x) {
@@ -46,7 +46,7 @@ void ofApp::update() {	// split up into methods
 				}
 
 				// Sum of all Y-component's of the force, if neither < or > then default is 0
-				// Check this
+				// Y scale is flipped in window
 				if (planets[i].position.y > planets[j].position.y) {
 					force_y_holder = ((planets[j].position.y - planets[i].position.y) /
 						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
@@ -56,41 +56,14 @@ void ofApp::update() {	// split up into methods
 						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 				}
 				
-				if (i == 0) {
-					cout << "Force on planet " << i << " by planet " << j << ": " << main_force_holder << endl;
-					cout << "ForceX on planet " << i << " by planet " << j << ": " << force_x_holder << endl;
-					cout << "ForceY on planet " << i << " by planet " << j << ": " << force_y_holder << endl;
-				}
-
 				planets[i].force_components.x += force_x_holder;
 				planets[i].force_components.y += force_y_holder;
 
 				main_force_holder = 0;
 				force_x_holder = 0;
 				force_y_holder = 0;
-
-
-
-				// Print combined components 
-
-				
-				if (i == 0) {
-					cout << "combined: " << setprecision(10) << sqrtf((pow(planets[i].force_components.x, 2) + pow(planets[i].force_components.y, 2))) << endl;
-				}
-				
-
-
-
 			}
 		}
-				/*
-				main_force_holder = 0;
-				force_x_holder = 0;
-				force_y_holder = 0;
-				*/
-			//}
-		
-
 		
 
 		// Acceleration = Force / Mass
@@ -98,35 +71,28 @@ void ofApp::update() {	// split up into methods
 		planets[i].acceleration.y = planets[i].force_components.y / planets[i].mass;
 
 		// Taken from: https://github.com/conorrussomanno/conorRussomanno_algo2012/blob/master/wk5_planet_simulation/src/Planet.h
-		// I don't think is accurate because of the different timings?
 		planets[i].velocity.x += planets[i].acceleration.x;
 		planets[i].velocity.y += planets[i].acceleration.y;
 		
 		// Set max X-velocity
 		if (planets[i].velocity.x > max_speed) {
 			planets[i].velocity.x = max_speed;
+			cout << "Planet " << i << " hit max speed." << endl;
 		}
 		if (planets[i].velocity.x < -max_speed) {
 			planets[i].velocity.x = -max_speed;
+			cout << "Planet " << i << " hit max speed." << endl;
 		}
 		// Set max Y-velocity
 		if (planets[i].velocity.y > max_speed) {
 			planets[i].velocity.y = max_speed;
+			cout << "Planet " << i << " hit max speed." << endl;
 		}
 		if (planets[i].velocity.y < -max_speed) {
 			planets[i].velocity.y = -max_speed;
+			cout << "Planet " << i << " hit max speed." << endl;
 		}
-
-
-		// cout << "planet " + i << endl;
-		//cout << "main: ";
-		//cout << planets[i].main_force << endl;
-		//cout << planets[i].force_components.x << endl;
-		//cout << planets[i].force_components.y << endl;
-		//cout << planets[i].acceleration.x << endl;
-		//cout << planets[i].acceleration.y << endl;
 	}
-		
 	
 	for (unsigned i = 0; i < planets.size(); i++) {
 		planets[i].update();
@@ -139,21 +105,24 @@ void ofApp::update() {	// split up into methods
 void ofApp::draw() {
 	ofBackgroundGradient(ofColor(60, 60, 60), ofColor(10, 10, 10));
 
+	cam.begin();
+
 	for (unsigned int i = 0; i < planets.size(); i++) {
-		// Set max X-acceleration
-		if (planets[i].velocity.x == 30 || planets[i].velocity.x == -30 || planets[i].velocity.y == 30 || planets[i].velocity.y == -30) {
-			cout << "green" << endl;
-			planets[i].drawMax();
-		}
-		else {
-			planets[i].draw();
-		}
+		planets[i].draw();
 	}
+
+	/*
+	// Draw frame stuff
 	ofSetColor(244, 244, 244);
 	string frame_num = "Frame: " + ofToString(ofGetFrameNum(), 4);
 	ofDrawBitmapString(frame_num, 100, 100);
 	string frame_rate = "Frame rate: " + ofToString(ofGetFrameRate(), 4);
 	ofDrawBitmapString(frame_rate, 100, 110);
+	*/
+	cam.end();
+
+	//string time = "Time: " + ofToString(ofGetFrameNum(), 4) + "s";
+	//ofDrawBitmapString(time, 100, 120);
 }
 
 // Totally reset the simulation to start simulation
@@ -161,6 +130,7 @@ void ofApp::resetSimulation() {
 	for (unsigned int i = 0; i < planets.size(); i++) {
 		planets[i].totalReset();
 	}
+
 	main_force_holder = 0;
 	force_x_holder = 0;
 	force_y_holder = 0;
@@ -178,7 +148,6 @@ void ofApp::destroy() {
 	for (unsigned i = 0; i < planets.size(); i++) {
 		for (unsigned j = 0; j < planets.size(); j++) {
 
-			// Don't check itself
 			if (i != j) {
 				// Change to area of circle
 				if (planets[i].radius + planets[j].radius >

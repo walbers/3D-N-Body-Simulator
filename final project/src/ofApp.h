@@ -6,7 +6,6 @@
 
 // TO DO: ADD TIME, fix velocity, tune variables to represent real world
 // optional: add spin/angular momentum, make 3D (spheres), add an option to create our solar system, elastic/inelastic collisions (shatter the planet), better planets (pictures instead of circle), tidal forces
-// use: gravitational potential to kinetic energy instead of acceleration
 
 // Problems ran into: timing, sin/cos/asin weren't accurate enough, .assignn for constructor didn't get random, splitting force into componenets, collision distance with different size planets
 //							  Fx = proportional way isn't accurate either
@@ -17,11 +16,9 @@
 //singleton class/pattern, extern in header and cpp or static variable in class
 // global variable pattern
 
-
-
 // scale velocity
 
-
+// make a grid
 
 class ofApp : public ofBaseApp{
 
@@ -34,6 +31,7 @@ class ofApp : public ofBaseApp{
 		void destroy();
 
 		vector<planet> planets;
+		ofEasyCam cam;
 		
 		// Constants - make const
 		float gravitational_constant = 8.0e-8; //6.67408e10-11

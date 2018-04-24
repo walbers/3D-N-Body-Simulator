@@ -6,12 +6,12 @@ planet::planet() {
 	radius = ofRandom(3, 25);
 	mass = ofRandom(0, 2) * radius * 1.0e7; // mass scales with radius, earth and mars scale ~1.0e6-1.07 from radius to mass
 	
-	/*
-	if (ofRandom(0, 100) < 2) {
+	
+	if (ofRandom(0, 100) < 1) {
 		radius = 80;
 		mass = 5 * radius * 1.0e8;
 	}
-	*/
+	
 }
 
 // Reset some of the planet's vectors to be recalculated - not velocity becuase that's accumalated
@@ -40,7 +40,7 @@ void planet::update() {
 // Draw the planet
 void planet::draw() {
 	ofSetColor(66, 83, 244); // blue
-	ofDrawCircle(position.x, position.y, radius);
+	ofDrawSphere(position.x, position.y, radius);
 	ofSetColor(244, 83, 66); // red
 	ofDrawBitmapString(mass, position.x, position.y);
 
@@ -51,16 +51,4 @@ void planet::draw() {
 	ofVec3f arrowHeadPoint(acceleration.x, acceleration.y);
 	ofDrawArrow(arrowTailPoint, arrowHeadPoint, 15.0);
 	*/
-}
-
-// Draw planet if it has reached max speed
-void planet::drawMax() {
-	ofSetColor(83, 244, 66); // green
-	ofDrawCircle(position.x, position.y, radius);
-	ofSetColor(244, 83, 66); // red
-	ofDrawBitmapString(mass, position.x, position.y);
-}
-
-void planet::checkMaxSpeed() {
-	//max_speed = 20;
 }
