@@ -17,9 +17,13 @@ public:
 	ofVec2f position;
 	ofVec2f velocity;
 
+	vector<ofVec2f> past_centers;
+	ofVec2f past_centers_holder;
+
 	// Methods
 	void reset();
 	void totalReset();
 	void update();
 	void draw();
+	void createSun();
 };

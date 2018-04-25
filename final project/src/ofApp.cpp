@@ -2,12 +2,12 @@
 #include <cmath>
 #include <iomanip>
 
+
 // Setup all the planet's and reset the simulation
 void ofApp::setup() {
 
 	ofSetVerticalSync(false);
-	ofSetFrameRate(30);
-	ofEnableDepthTest();
+	ofSetFrameRate(30); //ofEnableDepthTest();
 
 	// Create array of planets
 	for (int i = 0; i < number_of_planets; i++) {
@@ -17,24 +17,36 @@ void ofApp::setup() {
 	resetSimulation();
 }
 
-//--------------------------------------------------------------
-void ofApp::update() {	// split up into methods
+
+// Updates everything about the planets in order to orbit.
+void ofApp::update() {
 
 	destroy();
+	calculateForceComponents();
+	calculateVelocity();
 	
-	// Go through each planet getting its force
+	for (unsigned i = 0; i < planets.size(); i++) {
+		planets[i].update();
+	}
+
+	resetVectors();
+}
+
+
+// Calculates the force components for all the planets
+void ofApp::calculateForceComponents() {
+
 	for (unsigned i = 0; i < planets.size(); i++) {
 		for (unsigned j = 0; j < planets.size(); j++) {
-
-			// Will never divide by zero becuase we check to destroy a planet before this
-			// Magnitude of all the force on the planet, F = G*M1*M2/(d^2)
 			if (i != j) {
 
+				// Will never divide by zero becuase we check to destroy a planet before this
+				// Magnitude of all the force on the planet, F = G*M1*M2/(d^2)
 				main_force_holder = gravitational_constant * planets[i].mass * planets[j].mass /
 					ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
 
 
-				// Sum of all X-component's of the force, if neither < or > then default is 0
+				// X-component of the force
 				// Fx = F * ((x2 - x1) / d), Fx = the force proportional to the x distance
 				if (planets[i].position.x > planets[j].position.x) {
 					force_x_holder = ((planets[j].position.x - planets[i].position.x) /
@@ -45,8 +57,7 @@ void ofApp::update() {	// split up into methods
 						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 				}
 
-				// Sum of all Y-component's of the force, if neither < or > then default is 0
-				// Y scale is flipped in window
+				// Y-component of the force
 				if (planets[i].position.y > planets[j].position.y) {
 					force_y_holder = ((planets[j].position.y - planets[i].position.y) /
 						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
@@ -55,7 +66,7 @@ void ofApp::update() {	// split up into methods
 					force_y_holder = ((planets[j].position.y - planets[i].position.y) /
 						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
 				}
-				
+
 				planets[i].force_components.x += force_x_holder;
 				planets[i].force_components.y += force_y_holder;
 
@@ -64,7 +75,13 @@ void ofApp::update() {	// split up into methods
 				force_y_holder = 0;
 			}
 		}
-		
+	}
+}
+
+
+// Calculate the velocity of each planet
+void ofApp::calculateVelocity() {
+	for (unsigned i = 0; i < planets.size(); i++) {
 
 		// Acceleration = Force / Mass
 		planets[i].acceleration.x = planets[i].force_components.x / planets[i].mass;
@@ -73,7 +90,7 @@ void ofApp::update() {	// split up into methods
 		// Taken from: https://github.com/conorrussomanno/conorRussomanno_algo2012/blob/master/wk5_planet_simulation/src/Planet.h
 		planets[i].velocity.x += planets[i].acceleration.x;
 		planets[i].velocity.y += planets[i].acceleration.y;
-		
+
 		// Set max X-velocity
 		if (planets[i].velocity.x > max_speed) {
 			planets[i].velocity.x = max_speed;
@@ -93,13 +110,8 @@ void ofApp::update() {	// split up into methods
 			cout << "Planet " << i << " hit max speed." << endl;
 		}
 	}
-	
-	for (unsigned i = 0; i < planets.size(); i++) {
-		planets[i].update();
-	}
-
-	resetVectors();
 }
+
 
 // Draw all the planet's
 void ofApp::draw() {
@@ -115,14 +127,14 @@ void ofApp::draw() {
 	//3D
 	//ofDrawGridPlane(20, 50, false);
 
-	/*
+	
 	// Draw frame stuff
 	ofSetColor(244, 244, 244);
 	string frame_num = "Frame: " + ofToString(ofGetFrameNum(), 4);
 	ofDrawBitmapString(frame_num, 100, 100);
 	string frame_rate = "Frame rate: " + ofToString(ofGetFrameRate(), 4);
 	ofDrawBitmapString(frame_rate, 100, 110);
-	*/
+	
 	
 	//3d
 	//cam.end();
@@ -130,6 +142,7 @@ void ofApp::draw() {
 	//string time = "Time: " + ofToString(ofGetFrameNum(), 4) + "s";
 	//ofDrawBitmapString(time, 100, 120);
 }
+
 
 // Totally reset the simulation to start simulation
 void ofApp::resetSimulation() {
@@ -142,12 +155,14 @@ void ofApp::resetSimulation() {
 	force_y_holder = 0;
 }
 
+
 // Reset all vector's but velocity so they can be updated
 void ofApp::resetVectors() {
 	for (unsigned int i = 0; i < planets.size(); i++) {
 		planets[i].reset();
 	}
 }
+
 
 // Destory planets when collide - will throw error if two many collide at one time
 void ofApp::destroy() {
@@ -235,29 +250,3 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
-
-
-
-/*
-if (i != j) {
-
-// Destory planets when collide - will throw error if two many collide at one time
-// Change to area of circle
-
-if (planets[i].radius + planets[j].radius >
-ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y) + collision_distance_helper) {
-
-if (planets[i].radius > planets[j].radius) {
-
-planets[i].mass += planets[j].mass;
-planets.erase(planets.begin() + j);
-}
-else {
-planets[j].mass += planets[i].mass;
-planets.erase(planets.begin() + i);
-}
-}
-
-
-else {
-*/

@@ -4,21 +4,9 @@
 #include "../planet.h"
 #include <vector>
 
-// TO DO: ADD TIME, fix velocity, tune variables to represent real world
-// optional: add spin/angular momentum, make 3D (spheres), add an option to create our solar system, elastic/inelastic collisions (shatter the planet), better planets (pictures instead of circle), tidal forces
-
-// Problems ran into: timing, sin/cos/asin weren't accurate enough, .assignn for constructor didn't get random, splitting force into componenets, collision distance with different size planets
-//							  Fx = proportional way isn't accurate either
-
-
-// double
-
-//singleton class/pattern, extern in header and cpp or static variable in class
-// global variable pattern
-
-// scale velocity
-
-// make a grid
+// past centers trace
+// velocity/time thing
+// different scenarios
 
 class ofApp : public ofBaseApp{
 
@@ -29,6 +17,8 @@ class ofApp : public ofBaseApp{
 		void resetVectors();
 		void resetSimulation();
 		void destroy();
+		void calculateForceComponents();
+		void calculateVelocity();
 
 		vector<planet> planets;
 		ofEasyCam cam;
@@ -36,7 +26,7 @@ class ofApp : public ofBaseApp{
 		// Constants - make const
 		float gravitational_constant = 8.0e-8; //6.67408e10-11
 		float max_speed = 40;
-		float collision_distance_helper = 1; // Can control when planets collide
+		float collision_distance_helper = 5; // Can control when planets collide
 		int number_of_planets = 150; // ik gets laggy at 400
 
 		// Holders
