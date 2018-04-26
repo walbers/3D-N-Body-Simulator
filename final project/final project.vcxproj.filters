@@ -10,6 +10,9 @@
     <ClCompile Include="planet.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="settings.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -21,6 +24,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="planet.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,6 @@
 #pragma once
 #include "ofMain.h"
+//#include "setting.h"
 
 class planet {
 	
@@ -11,14 +12,11 @@ public:
 	float radius;
 
 	// Updated
-	//float force_vector;
 	ofVec2f force_components;
 	ofVec2f acceleration;
 	ofVec2f position;
 	ofVec2f velocity;
-
-	vector<ofVec2f> past_centers;
-	ofVec2f past_centers_holder;
+	vector<ofVec2f> past_centers; // set size so array or vector?
 
 	// Methods
 	void reset();
