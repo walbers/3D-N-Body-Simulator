@@ -9,20 +9,21 @@ void ofApp::setup() {
 
 	ofSetVerticalSync(false);
 	ofSetFrameRate(30); //ofEnableDepthTest();
-	velocity_factor = 1;
 
 	// Create array of planets
 	for (int i = 0; i < number_of_planets; i++) {
 		//cout << i << endl;
 		planets.push_back(planet());
 	}
-	//cout << "ofApp: " << thing++ << endl;
+
 	resetSimulation();
 }
 
 
 // Updates everything about the planets in order to orbit.
 void ofApp::update() {
+
+	planets_left = planets.size();
 
 	destroy();
 	//calculateForceComponents();
@@ -210,7 +211,6 @@ void ofApp::draw() {
 
 	//3D
 	//ofDrawGridPlane(20, 50, false);
-
 	
 	// Draw frame stuff
 	ofSetColor(244, 244, 244);
@@ -218,7 +218,10 @@ void ofApp::draw() {
 	ofDrawBitmapString(frame_num, 100, 100);
 	string frame_rate = "Frame rate: " + ofToString(ofGetFrameRate(), 4);
 	ofDrawBitmapString(frame_rate, 100, 110);
-	string time = "Days: " + ofToString((ofGetFrameNum() / 86400.0f) * velocity_factor, 4);
+
+	// Better way to do this?
+	// Doesn't work because can go back to zero if slow down
+	string time = "Days: " + ofToString((seconds / 86400.0f) * velocity_factor, 4);
 	ofDrawBitmapString(time, 100, 120);
 	
 	//3d

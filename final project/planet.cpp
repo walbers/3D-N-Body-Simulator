@@ -45,10 +45,12 @@ void planet::update() {
 	
 
 	// Tails code
-	//past_centers.push_back(position);
-	//if (past_centers.size() > 60) {
-	//	past_centers.erase(past_centers.begin());
-	//}
+	if (planets_left < 50) {
+		past_centers.push_back(position);
+		if (past_centers.size() > 60) {
+			past_centers.erase(past_centers.begin());
+		}
+	}
 }
 
 // Draw the planet
@@ -61,10 +63,11 @@ void planet::draw() {
 	ofDrawBitmapString(mass / 1.0e7 , position.x, position.y);
 
 	// Draw planet's tail
-	/*
-	ofSetColor(83, 244, 66);
-	for (unsigned i = 0; i < past_centers.size(); i++) {
-		ofDrawCircle(past_centers[past_centers.size() - i - 1].x, past_centers[past_centers.size() - i - 1].y, 2);
+	if (planets_left < 50) {
+		
+		ofSetColor(83, 244, 66);
+		for (unsigned i = 0; i < past_centers.size(); i++) {
+			ofDrawCircle(past_centers[past_centers.size() - i - 1].x, past_centers[past_centers.size() - i - 1].y, 2);
+		}
 	}
-	*/
 }
