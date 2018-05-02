@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "../planet.h"
-//#include "../setting.h"
 #include <vector>
 
 // 1. compare to github to speed up			X - how to make functions way faster
@@ -10,11 +9,17 @@
 // 3. speed up velocity						X - fix time thing
 // 4. only tails when so many left			X - prolly better way to do
 // 5. different scenarios/scaled correctly
-// 6. 3d
+// 6. 3d									X - add z motion, correct viewing angle
+// 7. Textures?
+// 8. max speed thing - make a boolean global
+// 9. font thing
+// 10. Development.md
 
 // velocity/time thing				meter / sec			pix / frame
 
-//float gravitational_constant = 8.0e-15; //6.67408e10-11 //-15
+// Slow down/speed up only works when its constant not changing.
+
+
 
 class ofApp : public ofBaseApp{
 
@@ -25,18 +30,22 @@ class ofApp : public ofBaseApp{
 		void resetVectors();
 		void resetSimulation();
 		void destroy();
-		void calculateForceComponents();
-		void calculateVelocity();
-		void checkMaxVelocity();
+		void calculateForceComponents(int, int);
+		void calculateVelocity(int);
+		void checkMaxVelocity(int);
 		void keyPressed(int key);
 
-		//3d
-		//ofEasyCam cam;
+		void drawIntro();
+		void draw2d();
+		void draw3d();
+		void drawSolarSystem();
+
+		ofEasyCam cam;		// 3d
 		vector<planet> planets;
-		int seconds;
+		float seconds;
 
 		// Holders
-		float main_force_holder;
+		double main_force_holder;
 		float force_x_holder;
 		float force_y_holder;
 

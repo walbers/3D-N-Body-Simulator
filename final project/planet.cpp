@@ -5,11 +5,13 @@ planet::planet() {
 	// Change so their are more smaller and less bigger planets
 	// Change to density
 	radius = ofRandom(3, 25);
-	mass = ofRandom(0, 2) * radius * 1.0e7; // mass scales with radius, earth and mars scale ~1.0e6-1.07 from radius to mass
-	
+	mass = ofRandom(0, 2) * radius * 1.0e7; // mass scales with radius, earth and mars scale ~1.0e6-1.07 from radius to mass, mass of earth 6x10^24
+
+	/*
 	if (ofRandom(0, 100) < 1) {
 		createSun();
 	}
+	*/
 }
 
 void planet::createSun() {
@@ -42,7 +44,6 @@ void planet::update() {
 	// Need to check with max speed
 	position.x += (velocity.x * velocity_factor);
 	position.y += (velocity.y * velocity_factor);
-	
 
 	// Tails code
 	if (planets_left < 50) {
@@ -55,19 +56,38 @@ void planet::update() {
 
 // Draw the planet
 void planet::draw() {
-	ofSetCircleResolution(100);
-	ofSetColor(66, 83, 244); // blue
-	ofDrawCircle(position.x, position.y, radius);
-	//ofDrawSphere(position.x, position.y, radius);			//3d
-	ofSetColor(244, 83, 66); // red
-	ofDrawBitmapString(mass / 1.0e7 , position.x, position.y);
+	
+	if (current_mode == CLASSIC_2D) {
 
-	// Draw planet's tail
-	if (planets_left < 50) {
-		
-		ofSetColor(83, 244, 66);
-		for (unsigned i = 0; i < past_centers.size(); i++) {
-			ofDrawCircle(past_centers[past_centers.size() - i - 1].x, past_centers[past_centers.size() - i - 1].y, 2);
+		ofSetColor(66, 83, 244); // blue
+		ofDrawCircle(position.x, position.y, radius);
+		ofSetColor(244, 83, 66); // red
+		ofDrawBitmapString(mass / 1.0e7, position.x, position.y);
+
+		// Draw planet's tail
+		if (planets_left < 50) {
+			ofSetColor(83, 244, 66); // green
+			for (unsigned i = 0; i < past_centers.size(); i++) {
+				ofDrawCircle(past_centers[past_centers.size() - i - 1].x, past_centers[past_centers.size() - i - 1].y, 2);
+			}
+		}
+	}
+	else if (current_mode == CLASSIC_3D) {
+
+
+		ofSetColor(66, 83, 244); // blue
+		//ofDrawCircle(position.x, position.y, radius);
+		ofDrawSphere(position.x, position.y, radius);			//3d
+		ofSetColor(244, 83, 66); // red
+		ofDrawBitmapString(mass / 1.0e7, position.x, position.y);
+
+		// Draw planet's tail
+		if (planets_left < 50) {
+			ofSetColor(83, 244, 66); // green
+			for (unsigned i = 0; i < past_centers.size(); i++) {
+				//ofDrawCircle(past_centers[past_centers.size() - i - 1].x, past_centers[past_centers.size() - i - 1].y, 2);
+				ofDrawSphere(past_centers[past_centers.size() - i - 1].x, past_centers[past_centers.size() - i - 1].y, 2);		// 3d
+			}
 		}
 	}
 }

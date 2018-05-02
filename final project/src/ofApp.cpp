@@ -9,6 +9,9 @@ void ofApp::setup() {
 
 	ofSetVerticalSync(false);
 	ofSetFrameRate(30); //ofEnableDepthTest();
+	ofSetCircleResolution(100);
+	seconds = 0;
+	current_mode = INTRO;
 
 	// Create array of planets
 	for (int i = 0; i < number_of_planets; i++) {
@@ -23,100 +26,114 @@ void ofApp::setup() {
 // Updates everything about the planets in order to orbit.
 void ofApp::update() {
 
-	planets_left = planets.size();
 
-	destroy();
-	//calculateForceComponents();
-	//calculateVelocity();
-	for (unsigned i = 0; i < planets.size(); i++) {
-		for (unsigned j = 0; j < planets.size(); j++) {
+	if (current_mode == INTRO) {
+	}
 
-			if (i != j) {
-				
-				// Will never divide by zero becuase we check to destroy a planet before this
-				// Magnitude of all the force on the planet, F = G*M1*M2/(d^2)
-				main_force_holder = gravitational_constant * planets[i].mass * planets[j].mass /
-					ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
+	else if (current_mode == CLASSIC_2D || current_mode == CLASSIC_3D) {
+
+		seconds += (1 * velocity_factor);
+
+		planets_left = planets.size();
+
+		destroy();
+		//calculateForceComponents();
+		//calculateVelocity();
+		for (unsigned i = 0; i < planets.size(); i++) {
+			for (unsigned j = 0; j < planets.size(); j++) {
+
+				if (i != j) {
+
+					// Will never divide by zero becuase we check to destroy a planet before this
+					// Magnitude of all the force on the planet, F = G*M1*M2/(d^2)
+					main_force_holder = gravitational_constant * planets[i].mass * planets[j].mass /
+						ofDistSquared(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y);
 
 
-				// X-component of the force
-				// Fx = F * ((x2 - x1) / d), Fx = the force proportional to the x distance
-				if (planets[i].position.x > planets[j].position.x) {
-					force_x_holder = ((planets[j].position.x - planets[i].position.x) /
-						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
+					// X-component of the force
+					// Fx = F * ((x2 - x1) / d), Fx = the force proportional to the x distance
+					if (planets[i].position.x > planets[j].position.x) {
+						force_x_holder = ((planets[j].position.x - planets[i].position.x) /
+							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
+					}
+					else if (planets[i].position.x < planets[j].position.x) {
+						force_x_holder = ((planets[j].position.x - planets[i].position.x) /
+							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
+					}
+
+					// Y-component of the force
+					if (planets[i].position.y > planets[j].position.y) {
+						force_y_holder = ((planets[j].position.y - planets[i].position.y) /
+							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
+					}
+					else if (planets[i].position.y < planets[j].position.y) {
+						force_y_holder = ((planets[j].position.y - planets[i].position.y) /
+							ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
+					}
+
+					planets[i].force_components.x += force_x_holder;
+					planets[i].force_components.y += force_y_holder;
+
+					main_force_holder = 0;
+					force_x_holder = 0;
+					force_y_holder = 0;
 				}
-				else if (planets[i].position.x < planets[j].position.x) {
-					force_x_holder = ((planets[j].position.x - planets[i].position.x) /
-						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
-				}
 
-				// Y-component of the force
-				if (planets[i].position.y > planets[j].position.y) {
-					force_y_holder = ((planets[j].position.y - planets[i].position.y) /
-						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
-				}
-				else if (planets[i].position.y < planets[j].position.y) {
-					force_y_holder = ((planets[j].position.y - planets[i].position.y) /
-						ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y)) * main_force_holder;
-				}
-
-				planets[i].force_components.x += force_x_holder;
-				planets[i].force_components.y += force_y_holder;
-
-				main_force_holder = 0;
-				force_x_holder = 0;
-				force_y_holder = 0;
 			}
 
+			//calculateVelocity(i);
+
+
+				// Acceleration = Force / Mass
+			planets[i].acceleration.x = planets[i].force_components.x / planets[i].mass;
+			planets[i].acceleration.y = planets[i].force_components.y / planets[i].mass;
+
+			// Taken from: https://github.com/conorrussomanno/conorRussomanno_algo2012/blob/master/wk5_planet_simulation/src/Planet.h
+			planets[i].velocity.x += planets[i].acceleration.x;
+			planets[i].velocity.y += planets[i].acceleration.y;
+
+
+			// Set max X-velocity
+			if (planets[i].velocity.x > max_speed) {
+				planets[i].velocity.x = max_speed;
+				cout << "Planet " << i << " hit max speed." << endl;
+			}
+			if (planets[i].velocity.x < -max_speed) {
+				planets[i].velocity.x = -max_speed;
+				cout << "Planet " << i << " hit max speed." << endl;
+			}
+			// Set max Y-velocity
+			if (planets[i].velocity.y > max_speed) {
+				planets[i].velocity.y = max_speed;
+				cout << "Planet " << i << " hit max speed." << endl;
+			}
+			if (planets[i].velocity.y < -max_speed) {
+				planets[i].velocity.y = -max_speed;
+				cout << "Planet " << i << " hit max speed." << endl;
+			}
 		}
 
 
-		// Acceleration = Force / Mass
-		planets[i].acceleration.x = planets[i].force_components.x / planets[i].mass;
-		planets[i].acceleration.y = planets[i].force_components.y / planets[i].mass;
-
-		// Taken from: https://github.com/conorrussomanno/conorRussomanno_algo2012/blob/master/wk5_planet_simulation/src/Planet.h
-		planets[i].velocity.x += planets[i].acceleration.x;
-		planets[i].velocity.y += planets[i].acceleration.y;
 
 
-		// Set max X-velocity
-		if (planets[i].velocity.x > max_speed) {
-			planets[i].velocity.x = max_speed;
-			cout << "Planet " << i << " hit max speed." << endl;
+
+		for (unsigned i = 0; i < planets.size(); i++) {
+			planets[i].update();
 		}
-		if (planets[i].velocity.x < -max_speed) {
-			planets[i].velocity.x = -max_speed;
-			cout << "Planet " << i << " hit max speed." << endl;
-		}
-		// Set max Y-velocity
-		if (planets[i].velocity.y > max_speed) {
-			planets[i].velocity.y = max_speed;
-			cout << "Planet " << i << " hit max speed." << endl;
-		}
-		if (planets[i].velocity.y < -max_speed) {
-			planets[i].velocity.y = -max_speed;
-			cout << "Planet " << i << " hit max speed." << endl;
-		}
+
+		resetVectors();
+		//}
+	//}
 	}
-
-
-
-
-	for (unsigned i = 0; i < planets.size(); i++) {
-		planets[i].update();
-	}
-
-	resetVectors();
 }
 
 
 // Calculates the force components for all the planets
-void ofApp::calculateForceComponents() {
-
-	for (unsigned i = 0; i < planets.size(); i++) {
-		for (unsigned j = 0; j < planets.size(); j++) {
-			if (i != j) {
+void ofApp::calculateForceComponents(int i, int j) {
+	
+	//for (unsigned i = 0; i < planets.size(); i++) {
+		//for (unsigned j = 0; j < planets.size(); j++) {
+			//if (i != j) {
 
 				// Will never divide by zero becuase we check to destroy a planet before this
 				// Magnitude of all the force on the planet, F = G*M1*M2/(d^2)
@@ -151,15 +168,15 @@ void ofApp::calculateForceComponents() {
 				main_force_holder = 0;
 				force_x_holder = 0;
 				force_y_holder = 0;
-			}
-		}
-	}
+			//}
+		//}
+	//}
 }
 
 
 // Calculate the velocity of each planet
-void ofApp::calculateVelocity() {
-	for (unsigned i = 0; i < planets.size(); i++) {
+void ofApp::calculateVelocity(int i) {
+	//for (unsigned i = 0; i < planets.size(); i++) {
 
 		// Acceleration = Force / Mass
 		planets[i].acceleration.x = planets[i].force_components.x / planets[i].mass;
@@ -168,13 +185,13 @@ void ofApp::calculateVelocity() {
 		// Taken from: https://github.com/conorrussomanno/conorRussomanno_algo2012/blob/master/wk5_planet_simulation/src/Planet.h
 		planets[i].velocity.x += planets[i].acceleration.x;
 		planets[i].velocity.y += planets[i].acceleration.y;
-	}
+	//}
 
-	checkMaxVelocity();
+	checkMaxVelocity(i);
 }
 
-void ofApp::checkMaxVelocity() {
-	for (int i = 0; i < planets.size(); i++) {
+void ofApp::checkMaxVelocity(int i) {
+	//for (int i = 0; i < planets.size(); i++) {
 
 		// Set max X-velocity
 		if (planets[i].velocity.x > max_speed) {
@@ -194,24 +211,39 @@ void ofApp::checkMaxVelocity() {
 			planets[i].velocity.y = -max_speed;
 			cout << "Planet " << i << " hit max speed." << endl;
 		}
-	}
+	//}
 }
 
 
 // Draw all the planet's
 void ofApp::draw() {
+	if (current_mode == INTRO) {
+		drawIntro();
+	}
+	else if (current_mode == CLASSIC_2D) {
+		draw2d();
+	}
+	else if (current_mode == CLASSIC_3D) {
+		draw3d();
+	}
+	else if (current_mode == SOLAR_SYSTEM_2D) {
+		drawSolarSystem();
+	}
+}
+
+void ofApp::drawIntro() {
+	ofBackgroundGradient(ofColor(60, 60, 60), ofColor(10, 10, 10));
+	ofDrawBitmapString("INTRO", 100, 130);
+}
+
+void ofApp::draw2d() {
 	ofBackgroundGradient(ofColor(60, 60, 60), ofColor(10, 10, 10));
 
-	//3d
-	//cam.begin();
-
+	// draw's planets
 	for (unsigned int i = 0; i < planets.size(); i++) {
 		planets[i].draw();
 	}
 
-	//3D
-	//ofDrawGridPlane(20, 50, false);
-	
 	// Draw frame stuff
 	ofSetColor(244, 244, 244);
 	string frame_num = "Frame: " + ofToString(ofGetFrameNum(), 4);
@@ -219,15 +251,44 @@ void ofApp::draw() {
 	string frame_rate = "Frame rate: " + ofToString(ofGetFrameRate(), 4);
 	ofDrawBitmapString(frame_rate, 100, 110);
 
-	// Better way to do this?
-	// Doesn't work because can go back to zero if slow down
-	string time = "Days: " + ofToString((seconds / 86400.0f) * velocity_factor, 4);
-	ofDrawBitmapString(time, 100, 120);
-	
-	//3d
-	//cam.end();
+	string days = "Total days: " + ofToString((seconds / 86400.0f), 4);
+	ofDrawBitmapString(days, 100, 120);
+	string years = "Total years: " + ofToString((seconds / 31536000.0f), 4);
+	ofDrawBitmapString(years, 100, 130);
+}
 
-	
+void ofApp::draw3d() {
+	ofBackgroundGradient(ofColor(60, 60, 60), ofColor(10, 10, 10));
+
+	cam.begin();		// 3d
+
+	for (unsigned int i = 0; i < planets.size(); i++) {
+		planets[i].draw();
+	}
+
+	// Draws grid
+	ofSetColor(ofColor::deepPink);		// 3d
+	ofDrawGridPlane(20, 50, false);		// 3d
+	//ofDrawAxis(300);					// 3d optional
+
+	// Draw frame stuff
+	ofSetColor(244, 244, 244);
+	string frame_num = "Frame: " + ofToString(ofGetFrameNum(), 4);
+	ofDrawBitmapString(frame_num, 100, 100);
+	string frame_rate = "Frame rate: " + ofToString(ofGetFrameRate(), 4);
+	ofDrawBitmapString(frame_rate, 100, 110);
+
+	string days = "Total days: " + ofToString((seconds / 86400.0f), 4);
+	ofDrawBitmapString(days, 100, 120);
+	string years = "Total years: " + ofToString((seconds / 31536000.0f), 4);
+	ofDrawBitmapString(years, 100, 130);
+
+	cam.end();		// 3d
+}
+
+void ofApp::drawSolarSystem() {
+	ofBackgroundGradient(ofColor(60, 60, 60), ofColor(10, 10, 10));
+	ofDrawBitmapString("FUCK DIS SHIT", 100, 130);
 }
 
 
@@ -257,6 +318,7 @@ void ofApp::destroy() {
 		for (unsigned j = 0; j < planets.size(); j++) {
 
 			if (i != j) {
+
 				// Change to area of circle
 				if (planets[i].radius + planets[j].radius >
 					ofDist(planets[i].position.x, planets[i].position.y, planets[j].position.x, planets[j].position.y) + collision_distance_helper) {
@@ -276,15 +338,10 @@ void ofApp::destroy() {
 
 		}
 	}
-
 }
 
-
-/**********************************************************/
-
-
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
+void ofApp::keyPressed(int key) {
 	if (key == OF_KEY_F12) {
 		ofToggleFullscreen();
 		return;
@@ -293,14 +350,34 @@ void ofApp::keyPressed(int key){
 	int upper_key = toupper(key); // Standardize on upper case
 
 	if (key == OF_KEY_RIGHT) {
+		cout << "right arrow key" << endl;
 		velocity_factor *= 2;
-	} 
+	}
 	else if (key == OF_KEY_LEFT) {
+		cout << "left arrow key" << endl;
 		velocity_factor /= 2;
+	}
+	else if (key == '1') {
+		cout << "intro mode" << endl;
+		current_mode = INTRO;
+	}
+	else if (key == '2') {
+		cout << "key = 2" << endl;
+		current_mode = CLASSIC_2D;
+	}
+	else if (key == '3') {
+		current_mode = CLASSIC_3D;
+	}
+	else if (key = '4') {
+		current_mode = SOLAR_SYSTEM_2D;
 	}
 
 	cout << velocity_factor << endl;
 }
+
+
+
+/**********************************************************/
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
