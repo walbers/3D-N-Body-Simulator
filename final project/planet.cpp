@@ -69,7 +69,7 @@ void planet::update() {
 // Draw the planet and it's accessories
 void planet::draw() {
 
-	if (current_mode == CLASSIC_2D) {
+	if (current_mode == CLASSIC_2D || current_mode == SOLAR_SYSTEM_2D) {
 		// Draw planet
 		ofSetColor(66, 83, 244); // blue
 		ofDrawCircle(position.x, position.y, radius);

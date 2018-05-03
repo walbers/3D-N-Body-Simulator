@@ -48,14 +48,19 @@ void ofApp::update() {
 		if (restart == true) {
 			reset();
 		}
-		else {
-
-		}
 	}
 
-	else if (current_mode == CLASSIC_2D) {
+	else if (current_mode == CLASSIC_2D || current_mode == SOLAR_SYSTEM_2D) {
 
 		if (restart == true) {
+			
+			if (current_mode == CLASSIC_2D) {
+				number_of_planets = 100;
+			}
+			else {
+				number_of_planets = 3;
+			}
+
 			reset();
 		}
 		else {
@@ -146,6 +151,7 @@ void ofApp::update() {
 
 	else if (current_mode == CLASSIC_3D) {
 		if (restart == true) {
+			number_of_planets = 100;
 			reset();
 		}
 		else {
@@ -253,14 +259,11 @@ void ofApp::draw() {
 	if (current_mode == INTRO) {
 		drawIntro();
 	}
-	else if (current_mode == CLASSIC_2D) {
+	else if (current_mode == CLASSIC_2D || current_mode == SOLAR_SYSTEM_2D) {
 		draw2d();
 	}
 	else if (current_mode == CLASSIC_3D) {
 		draw3d();
-	}
-	else if (current_mode == SOLAR_SYSTEM_2D) {
-		drawSolarSystem();
 	}
 }
 
@@ -318,11 +321,6 @@ void ofApp::draw3d() {
 	ofDrawBitmapString(years, 100, 130);
 
 	cam.end();
-}
-
-void ofApp::drawSolarSystem() {
-	ofBackgroundGradient(ofColor(60, 60, 60), ofColor(10, 10, 10));
-	ofDrawBitmapString("Solar system stuff", 100, 130);
 }
 
 
@@ -429,6 +427,4 @@ void ofApp::keyPressed(int key) {
 		current_mode = SOLAR_SYSTEM_2D;
 		restart = true;
 	}
-
-	cout << "vel fac:" << velocity_factor << endl;						//
 }

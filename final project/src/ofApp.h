@@ -22,7 +22,6 @@ public:
 	void drawIntro();
 	void draw2d();
 	void draw3d();
-	void drawSolarSystem();
 
 	ofEasyCam cam;
 	vector<planet> planets;
