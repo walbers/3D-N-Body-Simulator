@@ -31,9 +31,16 @@ void planet::reset() {
 
 // Reset the whole simulation - used to setup the simulation
 void planet::totalReset() {
-	position.x = ofRandomWidth();
-	position.y = ofRandomHeight();
-	position.z = ofRandomHeight();
+	if (current_mode == CLASSIC_3D) {
+		position.x = ofRandomHeight();
+		position.y = ofRandomHeight();
+		position.z = ofRandomHeight();
+	}
+	else {
+		position.x = ofRandomWidth();
+		position.y = ofRandomHeight();
+		position.z = ofRandomHeight();
+	}
 	velocity.x = 0;
 	velocity.y = 0;
 	velocity.z = 0;
@@ -84,7 +91,7 @@ void planet::draw() {
 
 		// Draw planet
 		ofSetColor(66, 83, 244); // blue
-		ofDrawSphere(position.x, position.y, radius);
+		ofDrawSphere(position.x, position.y, position.z, radius);
 
 		// Draw planet's tail
 		if (planets_left < 50) {
