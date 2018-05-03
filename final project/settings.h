@@ -9,6 +9,7 @@ enum simulationState {
 	SOLAR_SYSTEM_2D
 };
 
+extern bool create_sun;
 extern bool restart;
 extern int planets_left;
 extern int number_of_planets;

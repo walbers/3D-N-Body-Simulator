@@ -58,7 +58,8 @@ void ofApp::update() {
 				number_of_planets = 100;
 			}
 			else {
-				number_of_planets = 3;
+				number_of_planets = 8;
+				create_sun = true;
 			}
 
 			reset();

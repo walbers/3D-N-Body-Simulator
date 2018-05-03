@@ -7,16 +7,15 @@ planet::planet() {
 	radius = ofRandom(3, 25);
 	mass = ofRandom(0, 2) * radius * 1.0e7; // mass scales with radius, earth and mars scale ~1.0e6-1.07 from radius to mass, mass of earth 6x10^24
 
-											/*
-											if (ofRandom(0, 100) < 1) {
-											createSun();
-											}
-											*/
+	if (create_sun) {
+		createSun();
+	}
 }
 
 void planet::createSun() {
 	radius = 80;
 	mass = 5 * radius * 1.0e8;
+	create_sun = false;
 }
 
 // Reset some of the planet's vectors to be recalculated - not velocity becuase that's accumalated

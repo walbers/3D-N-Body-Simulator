@@ -4,6 +4,7 @@ extern int planets_left = 0;
 extern int number_of_planets = 100;						// Past 150 it starts to lag heavily
 extern float velocity_factor = 1024;						// Changes velocity and time
 extern bool restart = true;								// Bool to keep track of when changing modes
+extern bool create_sun = false;
 extern simulationState current_mode = INTRO;
 
 extern const int length_of_tail = 50;
