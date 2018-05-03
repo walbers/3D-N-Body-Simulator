@@ -2,22 +2,18 @@
 #include "ofMain.h"
 
 class planet {
-	
+
 public:
 
-	// Done in constructor
-	planet();
 	float mass;
 	float radius;
+	ofVec3f force_components;
+	ofVec3f acceleration;
+	ofVec3f position;
+	ofVec3f velocity;
+	vector<ofVec3f> past_centers;
 
-	// Updated
-	ofVec2f force_components;
-	ofVec2f acceleration;
-	ofVec2f position;
-	ofVec2f velocity;
-	vector<ofVec2f> past_centers; // set size so array or vector?
-
-	// Methods
+	planet();
 	void reset();
 	void totalReset();
 	void update();
