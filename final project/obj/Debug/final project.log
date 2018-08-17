@@ -1,7 +1,4 @@
-﻿  planet.cpp
-  settings.cpp
-  ofApp.cpp
-settings.cpp(13): warning C4305: 'initializing': truncation from 'double' to 'float'
+﻿  ofApp.cpp
   final project.vcxproj -> C:\Users\Lil Drizzle\Desktop\126projects\final-project-walbers1-master\final project\bin\final project_debug.exe
   final project.vcxproj -> bin\final project_debug.pdb (Full PDB)
   

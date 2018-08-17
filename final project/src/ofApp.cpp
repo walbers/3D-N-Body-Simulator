@@ -152,7 +152,7 @@ void ofApp::update() {
 
 	else if (current_mode == CLASSIC_3D) {
 		if (restart == true) {
-			number_of_planets = 100;
+			number_of_planets = 50;
 			reset();
 		}
 		else {
